@@ -13,7 +13,7 @@ export function useTodayMeetings() {
     queryFn: async (): Promise<Meeting[]> => {
       const { data, error } = await supabase
         .from("meetings")
-        .select("*, meeting_contacts(contact_id, contacts(*))")
+        .select("*, meeting_contacts(contact_id, contacts(*)), briefs(*)")
         .gte("scheduled_at", today.toISOString())
         .lt("scheduled_at", tomorrow.toISOString())
         .order("scheduled_at");
@@ -42,7 +42,8 @@ export function useCreateMeeting() {
 
       if (contactIds.length > 0) {
         const links = contactIds.map((cid) => ({ meeting_id: data.id, contact_id: cid }));
-        await supabase.from("meeting_contacts").insert(links);
+        const { error: linkError } = await supabase.from("meeting_contacts").insert(links);
+        if (linkError) throw linkError;
       }
       return data;
     },

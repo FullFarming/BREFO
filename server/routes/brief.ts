@@ -21,7 +21,7 @@ briefRouter.post("/generate", authMiddleware, async (req: AuthRequest, res) => {
   // briefs 상태를 pending으로 초기화
   const { data: brief, error: insertErr } = await supabase
     .from("briefs")
-    .upsert({ meeting_id: meetingId, status: "pending" })
+    .upsert({ meeting_id: meetingId, status: "pending" }, { onConflict: "meeting_id" })
     .select()
     .single();
 
@@ -36,7 +36,8 @@ briefRouter.post("/generate", authMiddleware, async (req: AuthRequest, res) => {
     const { data: contacts } = await supabase
       .from("contacts")
       .select("id, name, company, position")
-      .in("id", contactIds);
+      .in("id", contactIds)
+      .eq("user_id", req.userId!);
 
     const attendees = (contacts ?? []).map((c: any) => ({
       contactId: c.id,

@@ -87,7 +87,7 @@ CREATE POLICY "meeting_contacts_own" ON public.meeting_contacts
 -- briefs
 CREATE TABLE public.briefs (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  meeting_id   uuid REFERENCES public.meetings(id) ON DELETE CASCADE NOT NULL,
+  meeting_id   uuid REFERENCES public.meetings(id) ON DELETE CASCADE NOT NULL UNIQUE,
   content      jsonb,
   generated_at timestamptz DEFAULT now(),
   status       text DEFAULT 'pending' CHECK (status IN ('pending','ready','failed'))

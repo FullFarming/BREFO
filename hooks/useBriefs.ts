@@ -15,7 +15,7 @@ export function useBriefForMeeting(meetingId: string) {
       return data as Brief | null;
     },
     // 브리핑 생성은 최대 30초 소요 — pending 상태일 때 5초마다 폴링
-    refetchInterval: (data) =>
-      data?.status === "pending" ? 5000 : false,
+    refetchInterval: (query) =>
+      (query.state.data as Brief | null)?.status === "pending" ? 5000 : false,
   });
 }
